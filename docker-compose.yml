@@ -1,0 +1,33 @@
+version: '3'
+services: 
+  
+  db:
+    image: mariadb:latest
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+     MYSQL_ROOT_PASSWORD: example
+    networks: 
+      - internal-container-network
+    volumes:
+      - mariadb-data:/var/lib/mysql
+  
+#  product:
+#  image: product_app:v4
+#   restart: always
+#   ports:
+#    - 8104:80
+#   networks: 
+#    - internal-container-network
+#   volumes:
+#     - mariadb-data:/var/lib/mysql
+#   depends_on:
+#      - db
+    
+volumes:
+ mariadb-data:
+ sqldata:
+networks:
+ internal-container-network:
+  driver: bridge
