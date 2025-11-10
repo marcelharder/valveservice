@@ -8,7 +8,7 @@ public class Valve_Size
         public float EOA { get; set; }
         public float IOD { get; set; }
         public float OOD { get; set; }
-         public float Height { get; set; }
+        public float Height { get; set; }
         public float ConeAngle { get; set; }
 
         public Valve_Code? VT { get; set; }

@@ -14,7 +14,7 @@ services:
       - mariadb-data:/var/lib/mysql
   
   product:
-    image: product_app:v5
+    image: product_app:v9
     restart: always
     ports:
       - 8104:80
