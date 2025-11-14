@@ -36,6 +36,7 @@ namespace ValveService.Extensions;
           
             services.AddSingleton<DapperContext>();
             services.AddScoped<reportMapper>();
+            services.AddScoped<IPrediction, Prediction>();
             services.AddScoped<IValveCode, ValveCode>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             return services;
