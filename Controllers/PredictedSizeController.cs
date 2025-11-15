@@ -9,19 +9,20 @@ public class PredictedSizeController : ControllerBase
     {
         _prediction = prediction;
 
-        
+
     }
-    [HttpGet("predictSize/{age}/{weight}/{height}/{sex}")]
+   
+    [HttpGet("calculatePrediction/{age}/{weight}/{height}/{sex}")]
        public async Task<IActionResult> predictSize(int age, double weight, double height, string sex)
     {
-        
-        await _prediction.LoadModelAsync("Model/lookupData.json");
+        await _prediction.LoadModelAsync("Data/json-files/test.json");
         var result = _prediction.CalculatePrediction(age, weight, height, sex);
         return Ok(result);
     }
     [HttpGet("calculateResults/{age}/{weight}/{height}/{sex}/{measuredAAD?}")]
-    public IActionResult calculateResults(int age, double weight, double height, string sex, double? measuredAAD = null)
+    public async Task<IActionResult> calculateResults(int age, double weight, double height, string sex, double? measuredAAD = null)
     {
+        await _prediction.LoadModelAsync("Data/json-files/test.json");
         var result = _prediction.CalculateResults(age, weight, height, sex, measuredAAD);
         return Ok(result);
     }

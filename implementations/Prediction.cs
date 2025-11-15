@@ -167,34 +167,34 @@ public class Prediction : IPrediction
     private class LookupData
     {
         [JsonPropertyName("dimensions")]
-        public int[] Dimensions { get; set; }
+        public int[] Dimensions { get; set; } = null!;
 
         [JsonPropertyName("grid_axes")]
-        public GridAxes GridAxes { get; set; }
+        public GridAxes GridAxes { get; set; } = null!;
 
         [JsonPropertyName("predictions")]
-        public Predictions Predictions { get; set; }
+        public Predictions Predictions { get; set; } = null!;
     }
 
     private class GridAxes
     {
         [JsonPropertyName("log_weight")]
-        public double[] LogWeight { get; set; }
+        public double[] LogWeight { get; set; } = null!;
 
         [JsonPropertyName("sqrt_height")]
-        public double[] SqrtHeight { get; set; }
+        public double[] SqrtHeight { get; set; } = null!;
 
         [JsonPropertyName("log_age_plus_1")]
-        public double[] LogAgePlus1 { get; set; }
+        public double[] LogAgePlus1 { get; set; } = null!;
     }
 
     private class Predictions
     {
         [JsonPropertyName("mean_aad")]
-        public double[] MeanAad { get; set; }
+        public double[] MeanAad { get; set; } = null!;
 
         [JsonPropertyName("std_dev")]
-        public double[] StdDev { get; set; }
+        public double[] StdDev { get; set; } = null!;
     }
 }
 
