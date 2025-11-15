@@ -6,36 +6,7 @@ namespace ValveService.implementations;
 public class Prediction : IPrediction
 {
     private LookupData _lookupData = null!;
-    public bool IsLoaded { get; private set; }
-
-    public Prediction() { IsLoaded = false; }
-
-    /*   public async Task<bool> LoadModelAsync(string jsonFilePath)
-      {
-          if (string.IsNullOrWhiteSpace(jsonFilePath))
-              throw new ArgumentException("Invalid path", nameof(jsonFilePath));
-
-          try
-          {
-              var json = await File.ReadAllTextAsync(jsonFilePath);
-              var options = new JsonSerializerOptions
-              {
-                  PropertyNameCaseInsensitive = true
-              };
-
-              _lookupData = JsonSerializer.Deserialize<LookupData>(json, options)
-                            ?? throw new InvalidOperationException("Failed to deserialize lookup data");
-
-              IsLoaded = true;
-              return true;
-          }
-          catch (Exception)
-          {
-              IsLoaded = false;
-              throw;
-          }
-      }
-   */
+    
     private int FindLowerIndex(double[] vec, double q)
     {
         var n = vec.Length;
@@ -135,7 +106,6 @@ public class Prediction : IPrediction
         _lookupData = JsonSerializer.Deserialize<LookupData>(json, options)
                       ?? throw new InvalidOperationException("Failed to deserialize lookup data");
 
-        //if (!IsLoaded) throw new InvalidOperationException("Model not loaded");
         if (age <= 0 || weight <= 0 || height <= 0) throw new ArgumentException("Invalid input parameters");
         if (string.IsNullOrWhiteSpace(sex)) throw new ArgumentException("Invalid sex", nameof(sex));
 
@@ -165,27 +135,6 @@ public class Prediction : IPrediction
             StdDev = stdDev
         };
     }
-
-    /*  public CalculationResult CalculateResults(double age, double weight, double height, string sex, double? measuredAAD = null)
-     {
-         var pred = CalculatePrediction(age, weight, height, sex);
-
-         var result = new CalculationResult
-         {
-             MeanAAD = pred.MeanAAD,
-             StdDev = pred.StdDev,
-             LowerBound = pred.MeanAAD - 2 * pred.StdDev,
-             UpperBound = pred.MeanAAD + 2 * pred.StdDev,
-             ZScore = null
-         };
-
-         if (measuredAAD.HasValue && measuredAAD.Value > 0 && pred.StdDev != 0)
-         {
-             result.ZScore = (measuredAAD.Value - pred.MeanAAD) / pred.StdDev;
-         }
-
-         return result;
-     } */
 
     // Data models matching JSON structure
     private class LookupData
