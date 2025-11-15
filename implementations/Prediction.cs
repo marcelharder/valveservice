@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace ValveService.implementations;
 
@@ -9,32 +10,32 @@ public class Prediction : IPrediction
 
     public Prediction() { IsLoaded = false; }
 
-    public async Task<bool> LoadModelAsync(string jsonFilePath)
-    {
-        if (string.IsNullOrWhiteSpace(jsonFilePath))
-            throw new ArgumentException("Invalid path", nameof(jsonFilePath));
+    /*   public async Task<bool> LoadModelAsync(string jsonFilePath)
+      {
+          if (string.IsNullOrWhiteSpace(jsonFilePath))
+              throw new ArgumentException("Invalid path", nameof(jsonFilePath));
 
-        try
-        {
-            var json = await File.ReadAllTextAsync(jsonFilePath);
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
+          try
+          {
+              var json = await File.ReadAllTextAsync(jsonFilePath);
+              var options = new JsonSerializerOptions
+              {
+                  PropertyNameCaseInsensitive = true
+              };
 
-            _lookupData = JsonSerializer.Deserialize<LookupData>(json, options)
-                          ?? throw new InvalidOperationException("Failed to deserialize lookup data");
+              _lookupData = JsonSerializer.Deserialize<LookupData>(json, options)
+                            ?? throw new InvalidOperationException("Failed to deserialize lookup data");
 
-            IsLoaded = true;
-            return true;
-        }
-        catch (Exception)
-        {
-            IsLoaded = false;
-            throw;
-        }
-    }
-
+              IsLoaded = true;
+              return true;
+          }
+          catch (Exception)
+          {
+              IsLoaded = false;
+              throw;
+          }
+      }
+   */
     private int FindLowerIndex(double[] vec, double q)
     {
         var n = vec.Length;
@@ -111,7 +112,30 @@ public class Prediction : IPrediction
 
     public PredictionResult CalculatePrediction(double age, double weight, double height, string sex)
     {
-        if (!IsLoaded) throw new InvalidOperationException("Model not loaded");
+        _lookupData = new LookupData
+        {
+            Dimensions = new Dimensions { NSex = new int[] { 50, 50, 50 } },
+            GridAxes = new GridAxes
+            {
+                LogWeight = Enumerable.Range(1, 50).Select(i => Math.Log(30 + i)).ToArray(),
+                SqrtHeight = Enumerable.Range(1, 50).Select(i => Math.Sqrt(140 + i)).ToArray(),
+                LogAgePlus1 = Enumerable.Range(1, 50).Select(i => Math.Log(1 + i)).ToArray()
+            },
+            Predictions = new Predictions
+            {
+                MeanAad = Enumerable.Repeat(100.0, 50 * 50 * 50 * 2).ToArray(),
+                StdDev = Enumerable.Repeat(15.0, 50 * 50 * 50 * 2).ToArray()
+            }
+        };
+        var json = File.ReadAllText("Data/json-files/test.json");
+        var options = new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        _lookupData = JsonSerializer.Deserialize<LookupData>(json, options)
+                      ?? throw new InvalidOperationException("Failed to deserialize lookup data");
+
+        //if (!IsLoaded) throw new InvalidOperationException("Model not loaded");
         if (age <= 0 || weight <= 0 || height <= 0) throw new ArgumentException("Invalid input parameters");
         if (string.IsNullOrWhiteSpace(sex)) throw new ArgumentException("Invalid sex", nameof(sex));
 
@@ -142,38 +166,44 @@ public class Prediction : IPrediction
         };
     }
 
-    public CalculationResult CalculateResults(double age, double weight, double height, string sex, double? measuredAAD = null)
-    {
-        var pred = CalculatePrediction(age, weight, height, sex);
+    /*  public CalculationResult CalculateResults(double age, double weight, double height, string sex, double? measuredAAD = null)
+     {
+         var pred = CalculatePrediction(age, weight, height, sex);
 
-        var result = new CalculationResult
-        {
-            MeanAAD = pred.MeanAAD,
-            StdDev = pred.StdDev,
-            LowerBound = pred.MeanAAD - 2 * pred.StdDev,
-            UpperBound = pred.MeanAAD + 2 * pred.StdDev,
-            ZScore = null
-        };
+         var result = new CalculationResult
+         {
+             MeanAAD = pred.MeanAAD,
+             StdDev = pred.StdDev,
+             LowerBound = pred.MeanAAD - 2 * pred.StdDev,
+             UpperBound = pred.MeanAAD + 2 * pred.StdDev,
+             ZScore = null
+         };
 
-        if (measuredAAD.HasValue && measuredAAD.Value > 0 && pred.StdDev != 0)
-        {
-            result.ZScore = (measuredAAD.Value - pred.MeanAAD) / pred.StdDev;
-        }
+         if (measuredAAD.HasValue && measuredAAD.Value > 0 && pred.StdDev != 0)
+         {
+             result.ZScore = (measuredAAD.Value - pred.MeanAAD) / pred.StdDev;
+         }
 
-        return result;
-    }
+         return result;
+     } */
 
     // Data models matching JSON structure
     private class LookupData
     {
         [JsonPropertyName("dimensions")]
-        public int[] Dimensions { get; set; } = null!;
+        public Dimensions Dimensions { get; set; } = null!;
 
         [JsonPropertyName("grid_axes")]
         public GridAxes GridAxes { get; set; } = null!;
 
         [JsonPropertyName("predictions")]
         public Predictions Predictions { get; set; } = null!;
+    }
+
+    private class Dimensions
+    {
+        [JsonPropertyName("n_sex")]
+        public int[] NSex { get; set; } = null!;
     }
 
     private class GridAxes
@@ -196,6 +226,7 @@ public class Prediction : IPrediction
         [JsonPropertyName("std_dev")]
         public double[] StdDev { get; set; } = null!;
     }
+
 }
 
 
