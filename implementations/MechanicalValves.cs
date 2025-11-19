@@ -20,7 +20,6 @@ public class MechanicalValves
         float requiredLowerIOA = minid;
         var query =
             "SELECT s.*, c.* FROM ValveSizes s JOIN ValveCodes c ON s.VTValveTypeId = c.ValveTypeId "
-            + "ORDER BY s.Size ASC "
             + "WHERE c.TYPE = @soort "
             + "AND s.IOD <= @requiredUpperIOA "
             + "AND s.IOD >= @requiredLowerIOA ORDER BY s.IOD ASC";
@@ -37,7 +36,7 @@ public class MechanicalValves
             );
             if (result != null)
             {
-                help = result.ToList();
+                help = result.ToList().OrderBy(x => x.Size).ToList();
                 var listOfBioValves = new List<ValveSizeForReturnDTO>();
                 foreach (Valve_Size vs in help)
                 {

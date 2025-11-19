@@ -614,16 +614,8 @@ public class ValveCode : IValveCode
         var query = "SELECT Vendor_description FROM ValveCodes";
         using (var connection = _context.CreateConnection())
         {
-            var vendor_names = connection.QueryAsync<Valve_Code>(query);
-            foreach (
-                string? name in vendor_names.Result.Select(v => v.Vendor_description).Distinct()
-            )
-            {
-                Console.WriteLine(name);
-            }
-            return await Task.FromResult(
-                vendor_names.Result.Select(v => v.Vendor_description).Distinct().ToList()
-            );
+            var vendor_names = await connection.QueryAsync<Valve_Code>(query);
+            return vendor_names.Select(vn => vn.Vendor_description).Distinct().ToList();
         }
     }
 
@@ -632,16 +624,13 @@ public class ValveCode : IValveCode
     )
     {
         List<ValveSizeForReturnDTO> filteredList = new();
-        _ = new List<string?>();
-        List<string?> vendorNames = await getVendorNames();
         foreach (ValveSizeForReturnDTO size in sizesList)
         {
-            if (!vendorNames.Contains(size.VendorName))
+            if (size.Size == sizesList[0].Size)
             {
                 filteredList.Add(size);
             }
         }
-
         return filteredList;
     }
 

@@ -20,10 +20,10 @@ public class BiologicalValves
         float requiredLowerIOA = minid;
         var query =
             "SELECT s.*, c.* FROM ValveSizes s JOIN ValveCodes c ON s.VTValveTypeId = c.ValveTypeId "
-            + "ORDER BY s.Size ASC "
             + "WHERE c.TYPE = @soort "
             + "AND s.IOD <= @requiredUpperIOA "
-            + "AND s.IOD >= @requiredLowerIOA ORDER BY s.IOD ASC";
+            + "AND s.IOD >= @requiredLowerIOA ORDER BY s.IOD ASC ";
+          
         using (var connection = _context.CreateConnection())
         {
             var result = await connection.QueryAsync<Valve_Size>(
@@ -37,7 +37,7 @@ public class BiologicalValves
             );
             if (result != null)
             {
-                help = result.ToList();
+                help = result.ToList().OrderBy(x => x.Size).ToList();
             }
             else
             {
