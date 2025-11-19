@@ -38,6 +38,8 @@ public interface IValveCode
 
     Task<Valve_Size?> addValveSize(Valve_Size vs);
 
+    Task<List<ValveSizeForReturnDTO>?> getFilteredValveSizes(List<ValveSizeForReturnDTO> sizesList);
+
     
 
    #endregion

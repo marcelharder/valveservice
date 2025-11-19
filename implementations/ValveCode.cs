@@ -589,7 +589,7 @@ public class ValveCode : IValveCode
         string soort
     )
     {
-        List<ValveSizeForReturnDTO> result = new List<ValveSizeForReturnDTO>();
+        List<ValveSizeForReturnDTO> result = new();
         if (soort == "Mechanical")
         {
             var mech = new MechanicalValves(_context);
@@ -607,7 +607,42 @@ public class ValveCode : IValveCode
             vr.ModelName = valveCodeDetails?.Description ?? string.Empty;
         }
         return result;
+    }
 
+    private async Task<List<string?>> getVendorNames()
+    {
+        var query = "SELECT Vendor_description FROM ValveCodes";
+        using (var connection = _context.CreateConnection())
+        {
+            var vendor_names = connection.QueryAsync<Valve_Code>(query);
+            foreach (
+                string? name in vendor_names.Result.Select(v => v.Vendor_description).Distinct()
+            )
+            {
+                Console.WriteLine(name);
+            }
+            return await Task.FromResult(
+                vendor_names.Result.Select(v => v.Vendor_description).Distinct().ToList()
+            );
+        }
+    }
+
+    public async Task<List<ValveSizeForReturnDTO>?> getFilteredValveSizes(
+        List<ValveSizeForReturnDTO> sizesList
+    )
+    {
+        List<ValveSizeForReturnDTO> filteredList = new();
+        _ = new List<string?>();
+        List<string?> vendorNames = await getVendorNames();
+        foreach (ValveSizeForReturnDTO size in sizesList)
+        {
+            if (!vendorNames.Contains(size.VendorName))
+            {
+                filteredList.Add(size);
+            }
+        }
+
+        return filteredList;
     }
 
     #endregion

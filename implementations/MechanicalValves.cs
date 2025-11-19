@@ -9,19 +9,32 @@ public class MechanicalValves
         _context = context;
     }
 
-    public async Task<List<ValveSizeForReturnDTO>> GetMechanical(float minid, float maxid, string soort)
+    public async Task<List<ValveSizeForReturnDTO>> GetMechanical(
+        float minid,
+        float maxid,
+        string soort
+    )
     {
         List<Valve_Size> help;
         float requiredUpperIOA = maxid;
         float requiredLowerIOA = minid;
         var query =
-            "SELECT s.*, c.* FROM ValveSizes s JOIN ValveCodes c ON s.VTValveTypeId = c.ValveTypeId " +
-            "WHERE c.TYPE = @soort " +
-            "AND s.IOD <= @requiredUpperIOA " +
-            "AND s.IOD >= @requiredLowerIOA ORDER BY s.IOD ASC";
+            "SELECT s.*, c.* FROM ValveSizes s JOIN ValveCodes c ON s.VTValveTypeId = c.ValveTypeId "
+            + "ORDER BY s.Size ASC "
+            + "WHERE c.TYPE = @soort "
+            + "AND s.IOD <= @requiredUpperIOA "
+            + "AND s.IOD >= @requiredLowerIOA ORDER BY s.IOD ASC";
         using (var connection = _context.CreateConnection())
         {
-            var result = await connection.QueryAsync<Valve_Size>(query, new { requiredUpperIOA, requiredLowerIOA, soort });
+            var result = await connection.QueryAsync<Valve_Size>(
+                query,
+                new
+                {
+                    requiredUpperIOA,
+                    requiredLowerIOA,
+                    soort
+                }
+            );
             if (result != null)
             {
                 help = result.ToList();
@@ -41,16 +54,14 @@ public class MechanicalValves
                         VT = vs.VT,
                         ValveTypeId = vs.ValveTypeId,
                     };
-                    listOfBioValves.Add(test1);
+                     listOfBioValves.Add(test1);
                 }
                 return listOfBioValves;
             }
             else
             {
                 return new List<ValveSizeForReturnDTO>();
-
             }
         }
-       
     }
 }
