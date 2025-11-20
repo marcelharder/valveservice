@@ -13,17 +13,17 @@ services:
     volumes:
       - mariadb-data:/var/lib/mysql
   
- # product:
- #   image: product_app:v91
- #   restart: always
- #   ports:
- #     - 8104:80
- #   networks: 
- #     - internal-container-network
- #   volumes:
- #     - mariadb-data:/var/lib/mysql
- #   depends_on:
- #     - db
+  product:
+    image: product_app:v94
+    restart: always
+    ports:
+      - 8104:80
+    networks: 
+      - internal-container-network
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    depends_on:
+      - db
     
 volumes:
  mariadb-data:

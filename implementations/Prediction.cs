@@ -6,6 +6,18 @@ namespace ValveService.implementations;
 public class Prediction : IPrediction
 {
     private LookupData _lookupData = null!;
+
+    private string json;
+    private JsonSerializerOptions options;
+
+    public Prediction()
+    {
+        json = File.ReadAllText("Data/Seed/test.json");
+        options = new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+    }
     
     private int FindLowerIndex(double[] vec, double q)
     {
@@ -98,11 +110,8 @@ public class Prediction : IPrediction
                 StdDev = Enumerable.Repeat(15.0, 50 * 50 * 50 * 2).ToArray()
             }
         };
-        var json = File.ReadAllText("Data/json-files/test.json");
-        var options = new System.Text.Json.JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
+      
+
         _lookupData = JsonSerializer.Deserialize<LookupData>(json, options)
                       ?? throw new InvalidOperationException("Failed to deserialize lookup data");
 
